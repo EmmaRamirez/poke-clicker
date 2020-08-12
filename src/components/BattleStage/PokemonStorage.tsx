@@ -111,7 +111,6 @@ export function PokemonStorage() {
     const getLocationTag = () => null;
 
     const onClickStoragePokemon = (poke: PartyPokemon) => (e: React.MouseEvent<HTMLElement>) => {
-        console.log(e);
         if (e.ctrlKey) {
             setBoxSelections([...boxSelections, poke.id]);
         }
@@ -127,10 +126,18 @@ export function PokemonStorage() {
         console.log(filteredStorage.filter(pokemonSearch(searchString)));
     };
 
+    const releasePokemon = (e?: React.MouseEvent<HTMLElement>) => {
+        return;
+    };
+
+    const sortPokemon = (e?: React.MouseEvent<HTMLElement>) => {
+        return;
+    };
+
     return <Dialog kind={DialogKind.Storage} title='Storage' className={styles.Dialog}>
         <div className={styles.StorageBar}>
-            <Button value="Release" />
-            <Button value="Sort" />
+            <Button disabled={!!filteredStorage.length} onClick={releasePokemon} value="Release" />
+            <Button onClick={sortPokemon} value="Sort" />
             <input onChange={onSearch} value={searchTerm} className={styles.SearchBar} type='search' placeholder='Search...' />
         </div>
         <div className={styles.StorageContainer}>
