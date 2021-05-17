@@ -76,12 +76,13 @@ export interface CoreStateSchema {
 export type CoreStateEvent =
     | { type: 'STARTER_SELECTION'; selection: SpeciesName  }
     | { type: 'START_ENCOUNTER'; selection: SpeciesName }
-    | { type: 'BATTLE' }
+    | { type: 'BATTLE'; damage: number }
     | { type: 'KNOCKED_OUT' }
 ;
 
 export interface CoreStateContext {
     starter: SpeciesName | null;
+    damage: number;
 }
 
 export const coreMachine = Machine<CoreStateContext, CoreStateSchema, CoreStateEvent>({
@@ -89,6 +90,7 @@ export const coreMachine = Machine<CoreStateContext, CoreStateSchema, CoreStateE
     initial: GameMode.SelectingStarter,
     context: {
         starter: null,
+        damage: 0,
     },
     states: {
         [GameMode.SelectingStarter]: {
@@ -116,7 +118,7 @@ export const coreMachine = Machine<CoreStateContext, CoreStateSchema, CoreStateE
                             }
                         }),
                         //send(GameMode.EncounteringWildPokemon)
-                    ]
+                    ],
                 },
                 START_ENCOUNTER: GameMode.EncounteringWildPokemon
             },
@@ -125,7 +127,16 @@ export const coreMachine = Machine<CoreStateContext, CoreStateSchema, CoreStateE
         },
         [GameMode.EncounteringWildPokemon]: {
             on: {
-                BATTLE: GameMode.DamagingEnemy,
+                BATTLE: {
+                    target: GameMode.DamagingEnemy,
+                    actions: [
+                        assign({
+                            damage: (_, event) => {
+                                return event.damage;
+                            }
+                        })
+                    ]
+                },
             }
         },
         [GameMode.DamagingEnemy]: {
